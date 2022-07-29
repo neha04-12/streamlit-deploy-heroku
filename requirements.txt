@@ -1,0 +1,7 @@
+nltk
+sentence-transformers
+word2vec
+scipy
+pandas
+openai
+streamlit

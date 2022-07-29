@@ -1,7 +1,7 @@
 import streamlit as st
 from PIL import Image
 import main_app
-
+import pandas as pd
 
 technique = main_app.SummarizerModel()
 
@@ -56,23 +56,27 @@ keywords_output = st.container()
 waiting_text = 'waiting for text...'
 
 with main_output.form(key="forth", clear_on_submit=False):
-    text1 = text2 = text3 = text4 = text5 = text6 = waiting_text
-
+    text1 = text2 = text4 = text5 = text6 = waiting_text
+    text3 = pd.DataFrame()
+    keys=[]
     if input_text:
         waiting_text = waiting_text 
         if not key1 or not key2 or not key3:
             text6 = 'waiting for keywords'
         else:
             keys = [key1, key2, key3]
-            text6 = ' '.join(keys)
-        if not keyphrase:
-            text4 = waiting_text
-        else: 
-            text4 = 'Summary text'
+            text6 = technique.keyword_summary(keys, input_text)
+            #text6 = ' '.join(keys)
+            
+        #if not keyphrase:
+        #    text4 = waiting_text
+        #else: 
+        #    text4 = 'Summary text'
         text1 = technique.inference(input_text)
         text2 = 'Summary text'
         text3 = technique.summary_on_topics(input_text)
         text5 = 'Summary text'
+        #text6 = technique.keyword_summary(keys, input_text)
         
     
     
@@ -81,10 +85,15 @@ with main_output.form(key="forth", clear_on_submit=False):
         
     abstractive_output.text_area(label="Abstractive output:", value=text1, height=200)
     # extractive_output.text_area(label="Extractive output:", value=text2, height=200)
-    topic_output.text_area(label="Topic output:", value=text3, height=100       )
+    #topic_output(text3)
+    if text3.empty:
+        topic_output.text_area(label="topic-wise summary output:", value = "Waiting for text..")
+    else:
+        topic_output.write(text3, label="topic-wise summary output:",)  #st.dataframe(text3)
+        
     # keyphrase_output.text_area(label="Keyphrase related output:", value=text4, height=20)
     # extra_abs_output.text_area(label="Extractive Abstractive related output:", value=text5, height=20)
-    # keywords_output.text_area(label="Keywords related output:", value=text6, height=20)
+    keywords_output.text_area(label="Keywords related output:", value=text6, height=20)
         
         
     
